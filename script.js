@@ -1,8 +1,7 @@
-const GOOGLE_KEY = "AIzaSyC3d0-nbRzCRwjMg3iKL-SlwDZzHTuvoqY"; // Your Google Maps API key
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzC672jQ_y5V9WFXkArpmleTq2vYceqckid-tmXSU8J-zSaO77IPuiKx73Wjnr37Ueo/exec"; // Your Apps Script URL
+const GOOGLE_KEY = "AIzaSyC3d0-nbRzCRwjMg3iKL-SlwDZzHTuvoqY"; // Google Maps API key
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzC672jQ_y5V9WFXkArpmleTq2vYceqckid-tmXSU8J-zSaO77IPuiKx73Wjnr37Ueo/exec"; // Apps Script URL
 const PRICE_MIN = 7.25; // Minimum price per sq ft
 const PRICE_MAX = 9.00; // Maximum price per sq ft
-const DEFAULT_ROOF_SQFT = 2500;
 
 const form = document.getElementById("estimateForm");
 const resultDiv = document.getElementById("result");
@@ -12,43 +11,47 @@ form.addEventListener("submit", async (e) => {
   resultDiv.innerHTML = `<p>🛰️ Calculating your roof estimate...</p>`;
 
   const data = Object.fromEntries(new FormData(form));
-
   let roofSqFt = null;
 
   try {
-    let lat = null, lng = null;
-    try {
-      const geoRes = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(data.address)}&key=${GOOGLE_KEY}`
-      );
-      const geoData = await geoRes.json();
-      if (geoData.results?.length) {
-        ({ lat, lng } = geoData.results[0].geometry.location);
+    // Geocode the address
+    const geoRes = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(data.address)}&key=${GOOGLE_KEY}`
+    );
+    const geoData = await geoRes.json();
 
-        const radiuses = [50, 150, 300];
-        let building = null;
-        for (let radius of radiuses) {
-          const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];way(around:${radius},${lat},${lng})[building];out geom;`;
-          const overpassRes = await fetch(overpassUrl);
-          const overpassData = await overpassRes.json();
-          if (overpassData.elements?.length) {
-            building = overpassData.elements.sort((a,b)=>b.geometry.length - a.geometry.length)[0];
-            break;
-          }
-        }
+    if (!geoData.results?.length) throw new Error("Invalid address.");
 
-        if (building) {
-          const coords = building.geometry.map(p => [p.lon, p.lat]);
-          const polygon = turf.polygon([[...coords, coords[0]]]);
-          const areaSqM = turf.area(polygon);
-          roofSqFt = Math.round(areaSqM * 10.7639);
-        }
+    const { lat, lng } = geoData.results[0].geometry.location;
+
+    // Try multiple search radii for buildings
+    const radiuses = [50, 150, 300];
+    let building = null;
+
+    for (let radius of radiuses) {
+      const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];way(around:${radius},${lat},${lng})[building];out geom;`;
+      const overpassRes = await fetch(overpassUrl);
+      const overpassData = await overpassRes.json();
+
+      if (overpassData.elements?.length) {
+        building = overpassData.elements.sort((a, b) => b.geometry.length - a.geometry.length)[0];
+        break;
       }
-    } catch(err) {
-      console.warn("Geocoding or OSM failed, using fallback roof size", err);
     }
 
-    if (!roofSqFt || roofSqFt <= 0) roofSqFt = DEFAULT_ROOF_SQFT;
+    if (!building) {
+      resultDiv.innerHTML = `
+        <p style="color:red;">❌ We couldn’t automatically detect the roof outline for this address.<br>
+        Please double-check the address or request a manual inspection.</p>
+      `;
+      return;
+    }
+
+    // Calculate area from polygon geometry
+    const coords = building.geometry.map(p => [p.lon, p.lat]);
+    const polygon = turf.polygon([[...coords, coords[0]]]);
+    const areaSqM = turf.area(polygon);
+    roofSqFt = Math.round(areaSqM * 10.7639);
 
     // Calculate estimate range
     const minEstimate = Math.round(roofSqFt * PRICE_MIN);
