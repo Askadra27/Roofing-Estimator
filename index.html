@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Main Est. Tool</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Columbus Roofing - Free Roof Estimate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      max-width: 200px;
+      height: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #0d47a1;
+      margin-bottom: 25px;
+    }
+    label {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      background-color: #0d47a1;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 14px 0;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #09407f;
+    }
+    #result {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="https://media.licdn.com/dms/image/v2/D4D0BAQG9seIhQ5cW2g/company-logo_200_200/B4DZdAvrOwHkAM-/0/1749137929603/columbusroofingcompany_logo?e=2147483647&v=beta&t=Va-oi3Wiu7ncEG8HHZRl4kMJCtLzPj7oPiA-ctnxGDs" 
+       alt="Columbus Roofing Company" class="logo">
+
+  <h2>Get Your Free Roof Estimate</h2>
+
+  <form id="estimateForm">
+    <label for="fullName">Full Name</label>
+    <input type="text" name="fullName" id="fullName" placeholder="John Doe" required>
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" placeholder="johndoe@example.com" required>
+
+    <label for="phone">Phone</label>
+    <input type="tel" name="phone" id="phone" placeholder="(555) 123-4567" required>
+
+    <label for="address">Street Address</label>
+    <input type="text" name="address" id="address" placeholder="123 Main St, Columbus, OH" required>
+
+    <label for="roofType">Roof Type</label>
+    <select name="roofType" id="roofType" required>
+      <option value="">Select Roof Type</option>
+      <option value="Asphalt Shingle">Asphalt Shingle</option>
+      <option value="Metal">Metal</option>
+      <option value="Tile">Tile</option>
+    </select>
+
+    <label for="notes">Additional Notes (optional)</label>
+    <textarea name="notes" id="notes" rows="4" placeholder="Any additional info..."></textarea>
+
+    <button type="submit">Get My Free Estimate</button>
+  </form>
+
+  <div id="result"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script src="estimate.js"></script>
+
+</body>
+</html>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
